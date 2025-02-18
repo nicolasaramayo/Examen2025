@@ -1,0 +1,40 @@
+﻿@model IEnumerable<UserResponse>
+
+    @{
+        ViewData["Title"] = "Todas las Respuestas";
+    }
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2>@ViewData["Title"]</h2>
+                <p class="lead">Historial de todas tus respuestas</p>
+            </div>
+        </div>
+
+        @foreach (var response in Model)
+        {
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Pregunta @response.QuestionId</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Pregunta:</h6>
+                    <p class="mb-3">@response.Question.Text</p>
+
+                    <h6>Tu Respuesta:</h6>
+                    <p class="mb-2">@response.Response</p>
+
+                    <small class="text-muted">Enviada el: @response.CreatedAt.ToString("g")</small>
+                </div>
+            </div>
+        }
+
+        <div class="row mt-4 mb-4">
+            <div class="col">
+                <a href="@Url.Action("Index")" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Volver al Quiz
+                </a>
+            </div>
+        </div>
+    </div>

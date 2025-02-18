@@ -1,0 +1,24 @@
+﻿@model UserResponse
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Pregunta @Model.QuestionId</h5>
+        </div>
+        <div class="card-body">
+            <h6>Pregunta:</h6>
+            <p class="mb-4">@Model.Question.Text</p>
+
+            <h6>Tu Respuesta:</h6>
+            <p class="mb-2">@Model.Response</p>
+
+            <small class="text-muted">Enviada el: @Model.CreatedAt.ToString("g")</small>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="@Url.Action("Index")" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Volver al Quiz
+        </a>
+    </div>
+</div>

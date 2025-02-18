@@ -1,0 +1,14 @@
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\bin\Debug\net8.0\CalculadoraCientifica.exe
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\bin\Debug\net8.0\CalculadoraCientifica.deps.json
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\bin\Debug\net8.0\CalculadoraCientifica.runtimeconfig.json
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\bin\Debug\net8.0\CalculadoraCientifica.dll
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\bin\Debug\net8.0\CalculadoraCientifica.pdb
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.AssemblyInfoInputs.cache
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.AssemblyInfo.cs
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.csproj.CoreCompileInputs.cache
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.dll
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\refint\CalculadoraCientifica.dll
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.pdb
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\CalculadoraCientifica.genruntimeconfig.cache
+C:\Users\Admin\source\repos\Examen\CalculadoraCientifica\obj\Debug\net8.0\ref\CalculadoraCientifica.dll

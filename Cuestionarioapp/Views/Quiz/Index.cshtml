@@ -1,0 +1,260 @@
+﻿@model IEnumerable<Question>
+
+@{
+    ViewData["Title"] = "Examen Técnico";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>@ViewData["Title"]</h2>
+            <p class="lead">Responde las siguientes preguntas técnicas sobre .NET</p>
+        </div>
+    </div>
+
+    <div class="btn-group mt-4 mb-4">
+        <button class="btn btn-primary" onclick="exportResponses()">
+            <i class="bi bi-download"></i> Exportar Respuestas
+        </button>       
+    </div>
+
+    <div id="questions">
+        @foreach (var question in Model)
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Pregunta @question.Id</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">@question.Text</p>
+
+                   
+
+                    <div class="form-group">
+                        <div class="position-relative">
+                            <textarea class="form-control mb-3"
+                                      id="response-@question.Id"
+                                      rows="3"
+                                      placeholder="Escribe tu respuesta aquí..." readonly>@(question.UserResponses?.FirstOrDefault()?.Response ?? "")</textarea>
+
+                            <!-- Botones de edición y guardado -->
+                            <div class="position-absolute top-0 end-0 mt-2 me-2">
+                                <button class="btn btn-sm btn-warning" onclick="enableEdit(@question.Id)">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="saveEdit(@question.Id)" style="display: none;">
+                                    <i class="bi bi-check"></i> Guardar
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Botones -->
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="submitResponse(@question.Id, 'popup')">
+                                <i class="bi bi-window"></i> Popup
+                            </button>
+                            <button class="btn btn-primary" onclick="submitResponse(@question.Id, 'newwindow')">
+                                <i class="bi bi-box-arrow-up-right"></i> Nueva Ventana
+                            </button>
+                            <button class="btn btn-primary" onclick="submitResponse(@question.Id, 'samewindow')">
+                                <i class="bi bi-arrow-repeat"></i> Misma Ventana
+                            </button>
+                            <button class="btn btn-primary" onclick="submitResponse(@question.Id, 'email')">
+                                <i class="bi bi-envelope"></i> Email
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="response-note-@question.Id" class="mt-3"></div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-4 mb-4">
+        <div class="col">
+            <a href="@Url.Action("ViewResponses")" class="btn btn-primary">
+                <i class="bi bi-list-check"></i> Ver Todas las Respuestas
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function enableEdit(questionId) {
+            const textarea = document.getElementById(`response-${questionId}`);
+            const editBtn = event.currentTarget;
+            const saveBtn = editBtn.nextElementSibling;
+
+            // Habilitar edición
+            textarea.removeAttribute('readonly');
+            textarea.focus();
+
+            // Mostrar/ocultar botones
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-block';
+        }
+
+        function saveEdit(questionId) {
+            const textarea = document.getElementById(`response-${questionId}`);
+            const saveBtn = event.currentTarget;
+            const editBtn = saveBtn.previousElementSibling;
+            const response = textarea.value;
+
+            $.ajax({
+                url: '@Url.Action("UpdateResponse", "Quiz")',
+                type: 'POST',
+                data: {
+                    questionId: questionId,
+                    response: response
+                },
+                success: function(result) {
+                    if (result.success) {
+                        // Deshabilitar edición
+                        textarea.setAttribute('readonly', true);
+
+                        // Mostrar/ocultar botones
+                        saveBtn.style.display = 'none';
+                        editBtn.style.display = 'inline-block';
+
+                        toastr.success('Respuesta actualizada correctamente');
+                    } else {
+                        toastr.error(result.message || 'Error al actualizar la respuesta');
+                    }
+                },
+                error: function() {
+                    toastr.error('Error al guardar los cambios');
+                }
+            });
+         }
+
+        function submitResponse(questionId, responseType) {
+            const response = document.getElementById(`response-${questionId}`).value;
+
+            if (!response.trim()) {
+                toastr.error('Por favor, escribe una respuesta antes de enviar.');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SubmitResponse")',
+                type: 'POST',
+                data: {
+                    questionId: questionId,
+                    response: response,
+                    responseType: responseType
+                },
+                 success: function(result) {
+                    switch(responseType) {
+                        case 'samewindow':
+                            // Usar jQuery para insertar el HTMLs
+                            $(`#response-note-${questionId}`).html(result);
+                            toastr.success('Respuesta guardada correctamente');
+                            break;
+                        case 'popup':
+                            toastr.success('Respuesta guardada correctamente');
+                            break;
+                        case 'newwindow':
+                            window.open(`@Url.Action("ShowResponse")?id=${result.responseId}`, '_blank');
+                            break;
+                        case 'email':
+                        if(!result.success)
+                            toastr.error("Error al enviar por mail");
+                        else
+                            toastr.success('Respuesta enviada por email');
+                            break;
+                    }
+                },
+                error: function() {
+                    toastr.error('Error al enviar la respuesta');
+                }
+            });
+        }
+
+        function handleSuccessfulResponse(result, questionId, responseType) {
+           
+            switch(responseType) {
+                case 'popup':
+                    toastr.success('Respuesta guardada correctamente');
+                    showResponseNote(questionId, 'success', 'Respuesta guardada en popup');
+                    break;
+                case 'newwindow':
+                    window.open(`@Url.Action("ShowResponse")?id=${result.responseId}`, '_blank');
+                    showResponseNote(questionId, 'info', 'Respuesta abierta en nueva ventana');
+                    break;
+                case 'samewindow':
+                    // Ocultar primero
+                    $(`#response-note-${questionId}`).fadeOut('fast', function() {
+                        // Insertar HTML y mostrar con fade
+                        $(this).html(result).fadeIn('fast');
+                    });
+                    toastr.success('Respuesta guardada correctamente');
+                    break;
+                case 'email':
+                    toastr.success('Respuesta enviada por email');
+                    showResponseNote(questionId, 'success', 'Respuesta enviada por email');
+                    break;
+            }
+        }
+
+        function showResponseNote(questionId, type, message) {
+            debugger
+            $(`#response-note-${questionId}`).html(
+                `<div class="alert alert-${type}">${message}</div>`
+            );
+        }
+
+          function exportResponses() {
+                 // Crear un formulario temporal
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("ExportResponses")';
+
+                // Agregar el token antiforgery si es necesario
+                var antiforgeryToken = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (antiforgeryToken) {
+                    var tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = antiforgeryToken.value;
+                    form.appendChild(tokenInput);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+        }
+
+       
+
+        function makeResponseEditable(questionId) {
+            var responseElement = $(`#response-${questionId}`);
+            responseElement.prop('readonly', false);
+            responseElement.focus();
+        }
+
+        function saveEditedResponse(questionId) {
+            var response = $(`#response-${questionId}`).val();
+
+            $.ajax({
+                url: '@Url.Action("UpdateResponse")',
+                type: 'POST',
+                data: {
+                    id: questionId,
+                    response: response
+                },
+                success: function(result) {
+                    if (result.success) {
+                        toastr.success('Respuesta actualizada correctamente');
+                        $(`#response-${questionId}`).prop('readonly', true);
+                    } else {
+                        toastr.error(result.message || 'Error al actualizar la respuesta');
+                    }
+                },
+                error: function() {
+                    toastr.error('Error al actualizar la respuesta');
+                }
+            });
+        }
+    </script>
+}
